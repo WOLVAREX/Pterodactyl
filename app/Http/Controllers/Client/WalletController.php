@@ -106,12 +106,24 @@ class WalletController extends Controller
                         'provider' => 'mpesa',
                     ],
                 ],
+                'http_errors' => false,
             ]);
 
+            $statusCode = $response->getStatusCode();
             $body = json_decode((string) $response->getBody(), true);
 
-            if (empty($body['status'])) {
-                throw new \RuntimeException($body['message'] ?? 'Paystack rejected the charge request.');
+            if ($statusCode >= 400 || empty($body['status'])) {
+                Log::error('Paystack mobile money charge failed', [
+                    'status_code' => $statusCode,
+                    'body' => $body,
+                    'phone_sent' => $phone,
+                ]);
+
+                $transaction->update(['status' => 'failed']);
+
+                return response()->json([
+                    'error' => $body['message'] ?? 'Unable to start the M-Pesa payment. Please check the number and try again.',
+                ], 500);
             }
 
             return response()->json([
@@ -152,21 +164,21 @@ class WalletController extends Controller
 
     protected function normalizePhone(string $phone): string
     {
-        $phone = preg_replace('/\D+/', '', $phone) ?? '';
+        $digits = preg_replace('/\D+/', '', $phone) ?? '';
 
-        if (str_starts_with($phone, '254')) {
-            return $phone;
+        if (str_starts_with($digits, '254')) {
+            $national = substr($digits, 3);
+        } elseif (str_starts_with($digits, '0')) {
+            $national = substr($digits, 1);
+        } elseif (strlen($digits) === 9) {
+            $national = $digits;
+        } else {
+            $national = $digits;
         }
 
-        if (str_starts_with($phone, '0')) {
-            return '254' . substr($phone, 1);
-        }
-
-        if (strlen($phone) === 9) {
-            return '254' . $phone;
-        }
-
-        return $phone;
+        // Paystack's M-Pesa charge docs specifically ask for the "+" country code
+        // prefix, e.g. 0722000000 -> +254722000000 (not just 254722000000).
+        return '+254' . $national;
     }
 
     public function callback(Request $request): RedirectResponse
