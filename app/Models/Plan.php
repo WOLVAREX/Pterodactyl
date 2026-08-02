@@ -7,6 +7,8 @@ class Plan extends Model
     protected $table = 'plans';
 
     protected $fillable = [
+        'egg_id',
+        'nest_id',
         'name',
         'description',
         'price',
@@ -36,6 +38,16 @@ class Plan extends Model
         'is_active' => 'boolean',
         'sort_order' => 'integer',
     ];
+
+    public function getRouteKeyName(): string
+    {
+        return 'id';
+    }
+
+    public function egg()
+    {
+        return $this->belongsTo(\Pterodactyl\Models\Egg::class);
+    }
 
     public function getFeaturesListAttribute(): array
     {

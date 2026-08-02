@@ -12,8 +12,15 @@ Route::get('/account', [Base\IndexController::class, 'index'])
 // Wallet endpoints - the /account/wallet page itself is rendered by the
 // React SPA catch-all below; these are the data/action endpoints it calls.
 Route::get('/account/wallet/data', [\Pterodactyl\Http\Controllers\Client\WalletController::class, 'data'])->name('account.wallet.data');
-Route::post('/account/wallet/topup', [\Pterodactyl\Http\Controllers\Client\WalletController::class, 'initialize'])->name('account.wallet.topup');
+Route::post('/account/wallet/topup/card', [\Pterodactyl\Http\Controllers\Client\WalletController::class, 'initializeCard'])->name('account.wallet.topup.card');
+Route::post('/account/wallet/topup/mobile-money', [\Pterodactyl\Http\Controllers\Client\WalletController::class, 'initializeMobileMoney'])->name('account.wallet.topup.mobile');
+Route::get('/account/wallet/topup/status/{reference}', [\Pterodactyl\Http\Controllers\Client\WalletController::class, 'status'])->name('account.wallet.topup.status');
 Route::get('/account/wallet/callback', [\Pterodactyl\Http\Controllers\Client\WalletController::class, 'callback'])->name('account.wallet.callback');
+
+// Available Servers (plan store) endpoints - the /store page itself is
+// rendered by the React SPA catch-all below.
+Route::get('/account/store/plans', [\Pterodactyl\Http\Controllers\Client\PlanPurchaseController::class, 'index'])->name('account.store.plans');
+Route::post('/account/store/purchase/{plan}', [\Pterodactyl\Http\Controllers\Client\PlanPurchaseController::class, 'purchase'])->name('account.store.purchase');
 
 Route::get('/locales/locale.json', Base\LocaleController::class)
     ->withoutMiddleware(['auth', RequireTwoFactorAuthentication::class])

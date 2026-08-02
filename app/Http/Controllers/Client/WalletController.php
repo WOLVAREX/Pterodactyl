@@ -42,7 +42,7 @@ class WalletController extends Controller
         ]);
     }
 
-    public function initialize(Request $request): JsonResponse
+    public function initializeCard(Request $request): JsonResponse
     {
         $data = $request->validate([
             'amount' => 'required|numeric|min:10',
@@ -51,19 +51,47 @@ class WalletController extends Controller
         $user = auth()->user();
         $reference = 'WT-' . strtoupper(uniqid()) . '-' . $user->id;
 
+        Transaction::create([
+            'user_id' => $user->id,
+            'type' => 'deposit',
+            'amount' => $data['amount'],
+            'status' => 'pending',
+            'reference' => $reference,
+            'description' => 'Wallet top-up via card',
+        ]);
+
+        return response()->json([
+            'public_key' => $this->publicKey,
+            'reference' => $reference,
+            'email' => $user->email,
+            'amount' => (int) round($data['amount'] * 100),
+        ]);
+    }
+
+    public function initializeMobileMoney(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'amount' => 'required|numeric|min:10',
+            'phone' => 'required|string',
+        ]);
+
+        $user = auth()->user();
+        $reference = 'WT-' . strtoupper(uniqid()) . '-' . $user->id;
+        $phone = $this->normalizePhone($data['phone']);
+
         $transaction = Transaction::create([
             'user_id' => $user->id,
             'type' => 'deposit',
             'amount' => $data['amount'],
             'status' => 'pending',
             'reference' => $reference,
-            'description' => 'Wallet top-up via Paystack',
+            'description' => 'Wallet top-up via M-Pesa STK push',
         ]);
 
         $client = new HttpClient();
 
         try {
-            $response = $client->post('https://api.paystack.co/transaction/initialize', [
+            $response = $client->post('https://api.paystack.co/charge', [
                 'headers' => [
                     'Authorization' => 'Bearer ' . $this->secretKey,
                     'Content-Type' => 'application/json',
@@ -73,27 +101,72 @@ class WalletController extends Controller
                     'amount' => (int) round($data['amount'] * 100),
                     'currency' => 'KES',
                     'reference' => $reference,
-                    'callback_url' => route('account.wallet.callback'),
+                    'mobile_money' => [
+                        'phone' => $phone,
+                        'provider' => 'mpesa',
+                    ],
                 ],
             ]);
 
             $body = json_decode((string) $response->getBody(), true);
 
-            if (empty($body['status']) || empty($body['data']['authorization_url'])) {
-                throw new \RuntimeException('Paystack did not return an authorization URL.');
+            if (empty($body['status'])) {
+                throw new \RuntimeException($body['message'] ?? 'Paystack rejected the charge request.');
             }
 
             return response()->json([
-                'authorization_url' => $body['data']['authorization_url'],
+                'reference' => $reference,
+                'message' => $body['data']['display_text']
+                    ?? 'Enter your M-Pesa PIN on your phone to complete this payment.',
             ]);
         } catch (\Throwable $exception) {
-            Log::error('Paystack initialize failed: ' . $exception->getMessage());
+            Log::error('Paystack mobile money charge failed: ' . $exception->getMessage());
             $transaction->update(['status' => 'failed']);
 
             return response()->json([
-                'error' => 'Unable to start payment. Please try again shortly.',
+                'error' => 'Unable to start the M-Pesa payment. Please check the number and try again.',
             ], 500);
         }
+    }
+
+    public function status(string $reference): JsonResponse
+    {
+        $transaction = Transaction::where('reference', $reference)
+            ->where('user_id', auth()->id())
+            ->first();
+
+        if (!$transaction) {
+            return response()->json(['error' => 'Transaction not found.'], 404);
+        }
+
+        if ($transaction->status === 'pending') {
+            $this->verifyAndCredit($reference);
+            $transaction->refresh();
+        }
+
+        return response()->json([
+            'status' => $transaction->status,
+            'balance' => (float) auth()->user()->wallet_balance,
+        ]);
+    }
+
+    protected function normalizePhone(string $phone): string
+    {
+        $phone = preg_replace('/\D+/', '', $phone) ?? '';
+
+        if (str_starts_with($phone, '254')) {
+            return $phone;
+        }
+
+        if (str_starts_with($phone, '0')) {
+            return '254' . substr($phone, 1);
+        }
+
+        if (strlen($phone) === 9) {
+            return '254' . $phone;
+        }
+
+        return $phone;
     }
 
     public function callback(Request $request): RedirectResponse
@@ -160,7 +233,7 @@ class WalletController extends Controller
 
                     $transaction->user()->increment('wallet_balance', $transaction->amount);
                 });
-            } else {
+            } elseif (in_array($status, ['failed', 'abandoned', 'reversed'], true)) {
                 $transaction->update(['status' => 'failed']);
             }
         } catch (\Throwable $exception) {

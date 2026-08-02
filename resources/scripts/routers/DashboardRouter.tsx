@@ -3,6 +3,7 @@ import { Route, Switch } from 'react-router-dom';
 import Sidebar from '@/components/Sidebar';
 import DashboardHomeContainer from '@/components/dashboard/DashboardHomeContainer';
 import MyServersContainer from '@/components/dashboard/MyServersContainer';
+import AvailableServersContainer from '@/components/dashboard/AvailableServersContainer';
 import { NotFound } from '@/components/elements/ScreenBlock';
 import TransitionRouter from '@/TransitionRouter';
 import { useLocation } from 'react-router';
@@ -25,6 +26,9 @@ export default () => {
                             </Route>
                             <Route path={'/servers'} exact>
                                 <MyServersContainer />
+                            </Route>
+                            <Route path={'/store'} exact>
+                                <AvailableServersContainer />
                             </Route>
                             {routes.account.map(({ path, component: Component }) => (
                                 <Route key={path} path={`/account/${path}`.replace('//', '/')} exact>

@@ -119,6 +119,20 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label>Egg (server software to auto-install on purchase)</label>
+                        <select name="egg_id" class="form-control">
+                            <option value="">— Not purchasable yet (no egg linked) —</option>
+                            @foreach($eggGroups as $nestName => $eggs)
+                                <optgroup label="{{ $nestName }}">
+                                    @foreach($eggs as $egg)
+                                        <option value="{{ $egg->id }}">{{ $egg->name }}</option>
+                                    @endforeach
+                                </optgroup>
+                            @endforeach
+                        </select>
+                        <p class="help-block">Buying this plan will auto-create a server using this egg's defaults.</p>
+                    </div>
+                    <div class="form-group">
                         <label>Description</label>
                         <textarea name="description" class="form-control" rows="2"></textarea>
                     </div>

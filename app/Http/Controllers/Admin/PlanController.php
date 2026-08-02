@@ -5,6 +5,7 @@ namespace Pterodactyl\Http\Controllers\Admin;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
 use Pterodactyl\Models\Plan;
+use Pterodactyl\Models\Egg;
 use Illuminate\Http\RedirectResponse;
 use Prologue\Alerts\AlertsMessageBag;
 use Pterodactyl\Http\Controllers\Controller;
@@ -15,16 +16,27 @@ class PlanController extends Controller
     {
     }
 
+    protected function eggOptions()
+    {
+        return Egg::with('nest')->orderBy('nest_id')->orderBy('name')->get()->groupBy(function ($egg) {
+            return $egg->nest->name ?? 'Uncategorized';
+        });
+    }
+
     public function index(): View
     {
         return view('admin.plans.index', [
             'plans' => Plan::orderBy('sort_order')->orderBy('id')->get(),
+            'eggGroups' => $this->eggOptions(),
         ]);
     }
 
     public function view(Plan $plan): View
     {
-        return view('admin.plans.view', ['plan' => $plan]);
+        return view('admin.plans.view', [
+            'plan' => $plan,
+            'eggGroups' => $this->eggOptions(),
+        ]);
     }
 
     public function store(Request $request): RedirectResponse
@@ -74,7 +86,12 @@ class PlanController extends Controller
             'allocations' => 'required|integer|min:0',
             'features' => 'nullable|string',
             'sort_order' => 'nullable|integer',
+            'egg_id' => 'nullable|integer|exists:eggs,id',
         ]);
+
+        if (!empty($data['egg_id'])) {
+            $data['nest_id'] = Egg::query()->findOrFail($data['egg_id'])->nest_id;
+        }
 
         $data['is_active'] = $request->boolean('is_active');
         $data['is_featured'] = $request->boolean('is_featured');

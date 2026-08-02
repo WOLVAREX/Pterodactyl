@@ -69,6 +69,18 @@ const MobileHeader = styled.div`
     }
 `;
 
+const Nav = styled.nav`
+    ${tw`flex-1 flex flex-col gap-1 overflow-y-auto`};
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+        width: 0;
+        height: 0;
+    }
+`;
+
 const SERVER_ROUTE_ICONS: Record<string, any> = {
     Console: faTerminal,
     Files: faFolder,
@@ -144,7 +156,7 @@ export default ({ routes, to }: { routes: Route[]; to: (value: string, url?: boo
                     <p css={tw`text-lg font-header font-medium text-neutral-100 truncate leading-tight`}>{name}</p>
                 </div>
 
-                <nav css={tw`flex-1 flex flex-col gap-1 overflow-y-auto`}>
+                <Nav>
                     {routes
                         .filter((route) => !!route.name)
                         .map((route) =>
@@ -181,7 +193,7 @@ export default ({ routes, to }: { routes: Route[]; to: (value: string, url?: boo
                         Manage in Admin
                         </a>
                     )}
-                </nav>
+                </Nav>
 
                 <div css={tw`px-5 py-4 border-t border-neutral-800 flex items-center justify-between`}>
                     <div css={tw`flex items-center gap-2`}>

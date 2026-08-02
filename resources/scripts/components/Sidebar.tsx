@@ -14,6 +14,7 @@ import {
     faKey,
     faTerminal,
     faHistory,
+    faShoppingCart,
 } from '@fortawesome/free-solid-svg-icons';
 import routes from '@/routers/routes';
 import { useStoreState } from 'easy-peasy';
@@ -124,6 +125,10 @@ export default () => {
                     <NavItem to={'/servers'} onClick={() => setMobileOpen(false)}>
                         <FontAwesomeIcon icon={faServer} css={tw`w-4`} />
                         My Servers
+                    </NavItem>
+                    <NavItem to={'/store'} onClick={() => setMobileOpen(false)}>
+                        <FontAwesomeIcon icon={faShoppingCart} css={tw`w-4`} />
+                        Available Servers
                     </NavItem>
 
                     <p css={tw`text-xs uppercase tracking-wide text-neutral-500 px-4 mt-4 mb-1`}>Account</p>

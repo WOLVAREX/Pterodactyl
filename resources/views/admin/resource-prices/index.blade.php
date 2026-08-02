@@ -131,24 +131,28 @@
         </div>
     </div>
 </div>
-<script>
-    $('button[data-action="confirm-delete"]').click(function (event) {
-        event.preventDefault();
-        var form = $(this).closest('form');
-        swal({
-            title: '',
-            text: 'Are you sure you want to delete this resource price?',
-            type: 'warning',
-            showCancelButton: true,
-            allowOutsideClick: true,
-            closeOnConfirm: false,
-            confirmButtonText: 'Delete',
-            confirmButtonColor: '#d9534f',
-            showLoaderOnConfirm: true
-        }, function () {
-            form.find('.delete-action-field').val('delete');
-            form.get(0).submit();
+@endsection
+
+@section('footer-scripts')
+    @parent
+    <script>
+        $('button[data-action="confirm-delete"]').click(function (event) {
+            event.preventDefault();
+            var form = $(this).closest('form');
+            swal({
+                title: '',
+                text: 'Are you sure you want to delete this resource price?',
+                type: 'warning',
+                showCancelButton: true,
+                allowOutsideClick: true,
+                closeOnConfirm: false,
+                confirmButtonText: 'Delete',
+                confirmButtonColor: '#d9534f',
+                showLoaderOnConfirm: true
+            }, function () {
+                form.find('.delete-action-field').val('delete');
+                form.get(0).submit();
+            });
         });
-    });
-</script>
+    </script>
 @endsection
