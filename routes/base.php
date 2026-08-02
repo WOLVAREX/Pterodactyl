@@ -22,6 +22,10 @@ Route::get('/account/wallet/callback', [\Pterodactyl\Http\Controllers\Client\Wal
 Route::get('/account/store/plans', [\Pterodactyl\Http\Controllers\Client\PlanPurchaseController::class, 'index'])->name('account.store.plans');
 Route::post('/account/store/purchase/{plan}', [\Pterodactyl\Http\Controllers\Client\PlanPurchaseController::class, 'purchase'])->name('account.store.purchase');
 
+// Custom server builder endpoints.
+Route::get('/account/store/custom/options', [\Pterodactyl\Http\Controllers\Client\CustomBuildController::class, 'options'])->name('account.store.custom.options');
+Route::post('/account/store/custom/purchase', [\Pterodactyl\Http\Controllers\Client\CustomBuildController::class, 'purchase'])->name('account.store.custom.purchase');
+
 Route::get('/locales/locale.json', Base\LocaleController::class)
     ->withoutMiddleware(['auth', RequireTwoFactorAuthentication::class])
     ->where('namespace', '.*');

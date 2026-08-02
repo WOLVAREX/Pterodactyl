@@ -76,6 +76,25 @@
             font-weight: 600;
         }
         .nav-links a.cta:hover { background: var(--cyan-500); }
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            margin: -8px;
+        }
+        .nav-toggle .bar {
+            display: block;
+            width: 22px;
+            height: 2px;
+            background: #fff;
+            margin: 5px 0;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+        .nav-toggle.open .bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+        .nav-toggle.open .bar:nth-child(2) { opacity: 0; }
+        .nav-toggle.open .bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
         .hero {
             text-align: center;
             padding: 90px 6% 70px;
@@ -227,11 +246,40 @@
             color: var(--gray-500);
             font-size: 0.8rem;
         }
+        @media (max-width: 768px) {
+            nav { position: relative; }
+            .nav-toggle { display: block; }
+            .nav-links {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: var(--gray-900);
+                flex-direction: column;
+                align-items: stretch;
+                height: auto;
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.25s ease;
+            }
+            .nav-links.open {
+                max-height: 400px;
+                border-top: 1px solid var(--gray-700);
+                box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+            }
+            .nav-links a {
+                height: auto;
+                padding: 16px 6%;
+                border-bottom: 1px solid var(--gray-800);
+            }
+            .nav-links a.cta {
+                margin: 14px 6%;
+                text-align: center;
+                padding: 11px 18px;
+            }
+        }
         @media (max-width: 640px) {
             .hero h1 { font-size: 1.9rem; }
-            .nav-inner { flex-direction: column; height: auto; padding: 14px 6%; gap: 10px; }
-            .nav-links { flex-wrap: wrap; justify-content: center; height: auto; }
-            .nav-links a { height: 36px; }
             .hero-actions { flex-direction: column; align-items: center; }
         }
     </style>
@@ -244,12 +292,17 @@
                 <img src="/assets/svgs/pterodactyl.svg" alt="" onerror="this.style.display='none'">
                 WOLF TECH
             </div>
-            <div class="nav-links">
+            <div class="nav-links" id="nav-links">
                 <a href="#features">Features</a>
                 <a href="#pricing">Pricing</a>
                 <a href="{{ route('auth.login') }}">Login</a>
                 <a href="{{ route('auth.register') }}" class="cta">Get Started</a>
             </div>
+            <button type="button" class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="nav-links">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
         </div>
     </nav>
 
@@ -366,6 +419,33 @@
     <footer>
         &copy; {{ date('Y') }} WOLF TECH. All rights reserved.
     </footer>
+
+    <script>
+        (function () {
+            var toggle = document.getElementById('nav-toggle');
+            var links = document.getElementById('nav-links');
+
+            function closeMenu() {
+                toggle.classList.remove('open');
+                links.classList.remove('open');
+                toggle.setAttribute('aria-expanded', 'false');
+            }
+
+            toggle.addEventListener('click', function () {
+                var isOpen = links.classList.toggle('open');
+                toggle.classList.toggle('open', isOpen);
+                toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            });
+
+            links.querySelectorAll('a').forEach(function (a) {
+                a.addEventListener('click', closeMenu);
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') closeMenu();
+            });
+        })();
+    </script>
 
 </body>
 </html>

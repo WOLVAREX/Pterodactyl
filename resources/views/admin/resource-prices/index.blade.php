@@ -65,6 +65,18 @@
                                                     <input type="text" name="name" class="form-control" value="{{ $item->name }}" required />
                                                 </div>
                                                 <div class="form-group">
+                                                    <label>Resource Type (for custom builder calculation)</label>
+                                                    <select name="resource_key" class="form-control">
+                                                        <option value="">— Not used in custom builder —</option>
+                                                        <option value="ram" @selected($item->resource_key === 'ram')>RAM (priced per GB)</option>
+                                                        <option value="disk" @selected($item->resource_key === 'disk')>Disk (priced per GB)</option>
+                                                        <option value="cpu" @selected($item->resource_key === 'cpu')>CPU (priced per 100% / 1 core)</option>
+                                                        <option value="database" @selected($item->resource_key === 'database')>Database (priced per database)</option>
+                                                        <option value="backup" @selected($item->resource_key === 'backup')>Backup (priced per backup)</option>
+                                                        <option value="allocation" @selected($item->resource_key === 'allocation')>Allocation (priced per port)</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
                                                     <label>Unit Label</label>
                                                     <input type="text" name="unit_label" class="form-control" value="{{ $item->unit_label }}" required />
                                                 </div>
@@ -108,6 +120,18 @@
                     <div class="form-group">
                         <label>Name</label>
                         <input type="text" name="name" class="form-control" placeholder="RAM" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Resource Type (for custom builder calculation)</label>
+                        <select name="resource_key" class="form-control">
+                            <option value="">— Not used in custom builder —</option>
+                            <option value="ram">RAM (priced per GB)</option>
+                            <option value="disk">Disk (priced per GB)</option>
+                            <option value="cpu">CPU (priced per 100% / 1 core)</option>
+                            <option value="database">Database (priced per database)</option>
+                            <option value="backup">Backup (priced per backup)</option>
+                            <option value="allocation">Allocation (priced per port)</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label>Unit Label</label>

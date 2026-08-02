@@ -54,6 +54,7 @@ class ResourcePriceController extends Controller
     {
         $data = $request->validate([
             'name' => 'required|string|max:191',
+            'resource_key' => 'nullable|in:ram,disk,cpu,database,backup,allocation',
             'unit_label' => 'required|string|max:100',
             'price_kes' => 'required|numeric|min:0',
             'sort_order' => 'nullable|integer',

@@ -13,6 +13,7 @@ class ResourcePrice extends Model
 
     protected $fillable = [
         'name',
+        'resource_key',
         'unit_label',
         'price_kes',
         'sort_order',

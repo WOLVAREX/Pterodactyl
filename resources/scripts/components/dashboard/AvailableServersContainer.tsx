@@ -8,6 +8,7 @@ import http from '@/api/http';
 import tw from 'twin.macro';
 import { useFlashKey } from '@/plugins/useFlash';
 import FlashMessageRender from '@/components/FlashMessageRender';
+import CustomBuildContainer from '@/components/dashboard/CustomBuildContainer';
 
 interface Plan {
     id: number;
@@ -27,6 +28,7 @@ interface Plan {
 
 export default () => {
     const history = useHistory();
+    const [tab, setTab] = useState<'plans' | 'custom'>('plans');
     const [plans, setPlans] = useState<Plan[] | null>(null);
     const [selected, setSelected] = useState<Plan | null>(null);
     const [purchasing, setPurchasing] = useState(false);
@@ -75,7 +77,34 @@ export default () => {
         <PageContentBlock title={'Available Servers'}>
             <FlashMessageRender byKey={'account:store'} css={tw`mb-4`} />
 
-            {!plans ? (
+            <div css={tw`flex gap-2 mb-6`}>
+                <button
+                    onClick={() => setTab('plans')}
+                    css={[
+                        tw`px-4 py-2 rounded-lg text-sm font-medium border`,
+                        tab === 'plans'
+                            ? tw`bg-cyan-600 border-cyan-600 text-white`
+                            : tw`bg-neutral-900 border-neutral-600 text-neutral-300 hover:border-neutral-400`,
+                    ]}
+                >
+                    Fixed Plans
+                </button>
+                <button
+                    onClick={() => setTab('custom')}
+                    css={[
+                        tw`px-4 py-2 rounded-lg text-sm font-medium border`,
+                        tab === 'custom'
+                            ? tw`bg-cyan-600 border-cyan-600 text-white`
+                            : tw`bg-neutral-900 border-neutral-600 text-neutral-300 hover:border-neutral-400`,
+                    ]}
+                >
+                    Build Your Own
+                </button>
+            </div>
+
+            {tab === 'custom' && <CustomBuildContainer />}
+
+            {tab === 'plans' && (!plans ? (
                 <Spinner centered size={'large'} />
             ) : plans.length === 0 ? (
                 <p css={tw`text-sm text-neutral-400`}>No plans are available for purchase right now.</p>
@@ -132,7 +161,7 @@ export default () => {
                         </div>
                     ))}
                 </div>
-            )}
+            ))}
 
             <Dialog.Confirm
                 open={!!selected && !purchasing}
