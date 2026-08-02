@@ -3,6 +3,7 @@
 namespace Pterodactyl\Http\Controllers\Client;
 
 use Log;
+use Illuminate\Http\Request;
 use Pterodactyl\Models\Plan;
 use Pterodactyl\Models\ResourcePrice;
 use Pterodactyl\Models\Location;
