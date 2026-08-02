@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WOLF TECH — Game Server Hosting</title>
+    <title>IronHost — Game Server Hosting</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="/favicons/favicon-32x32.png" sizes="32x32">
@@ -290,7 +290,7 @@
         <div class="nav-inner">
             <div class="brand">
                 <img src="/assets/svgs/pterodactyl.svg" alt="" onerror="this.style.display='none'">
-                WOLF TECH
+                IronHost
             </div>
             <div class="nav-links" id="nav-links">
                 <a href="#features">Features</a>
@@ -309,7 +309,7 @@
     <section class="hero">
         <div class="tag">HIGH-PERFORMANCE GAME SERVER HOSTING</div>
         <h1>Deploy your game server in seconds, not hours.</h1>
-        <p>Instant setup, DDoS-protected nodes, and full control over your server — powered by WOLF TECH infrastructure.</p>
+        <p>Instant setup, DDoS-protected nodes, and full control over your server — powered by IronHost infrastructure.</p>
         <div class="hero-actions">
             <a href="{{ route('auth.register') }}" class="btn btn-solid">Create Account</a>
             <a href="#pricing" class="btn">View Plans</a>
@@ -417,7 +417,7 @@
     </section>
 
     <footer>
-        &copy; {{ date('Y') }} WOLF TECH. All rights reserved.
+        &copy; {{ date('Y') }} IronHost. All rights reserved.
     </footer>
 
     <script>
