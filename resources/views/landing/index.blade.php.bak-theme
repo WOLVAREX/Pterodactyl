@@ -9,27 +9,19 @@
     <link rel="icon" type="image/png" href="/favicons/favicon-32x32.png" sizes="32x32">
     <style>
         :root {
-            @foreach($themeVariables as $name => $value)
-                {{ $name }}: {{ $value }};
-            @endforeach
-
-            /* Aliases so the rest of this page's existing CSS (which
-               references --gray-*/--cyan-*/--black) stays in sync with
-               the admin-configurable panel theme, without having to
-               rewrite every rule below. */
-            --gray-900: rgb(var(--color-neutral-900));
-            --gray-800: rgb(var(--color-neutral-800));
-            --gray-700: rgb(var(--color-neutral-700));
-            --gray-600: rgb(var(--color-neutral-600));
-            --gray-500: rgb(var(--color-neutral-500));
-            --gray-400: rgb(var(--color-neutral-400));
-            --gray-300: rgb(var(--color-neutral-300));
-            --gray-200: rgb(var(--color-neutral-200));
-            --gray-100: rgb(var(--color-neutral-100));
-            --black: rgb(var(--color-neutral-900));
-            --cyan-600: rgb(var(--color-primary-600));
-            --cyan-500: rgb(var(--color-primary-500));
-            --cyan-400: rgb(var(--color-primary-400));
+            --gray-900: hsl(210, 24%, 16%);
+            --gray-800: hsl(209, 20%, 25%);
+            --gray-700: hsl(209, 18%, 30%);
+            --gray-600: hsl(209, 14%, 37%);
+            --gray-500: hsl(211, 12%, 43%);
+            --gray-400: hsl(211, 10%, 53%);
+            --gray-300: hsl(211, 13%, 65%);
+            --gray-200: hsl(210, 16%, 82%);
+            --gray-100: hsl(214, 15%, 91%);
+            --black: #131a20;
+            --cyan-600: #0891b2;
+            --cyan-500: #06b6d4;
+            --cyan-400: #22d3ee;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -403,7 +395,7 @@
 
     <section class="pricing" id="resources" style="background: var(--gray-800);">
         <div class="section-label">Build Your Own</div>
-        <h2 class="section-title">Pick &amp; Choose Pricing</h2>
+        <h2 class="section-title">À la carte pricing</h2>
 
         @if($resourcePrices->isEmpty())
             <div class="no-plans">
