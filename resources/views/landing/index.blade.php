@@ -262,7 +262,9 @@
                 top: 100%;
                 left: 0;
                 right: 0;
-                background: var(--gray-900);
+                z-index: 100;
+                background-color: var(--gray-900, #1a1f26);
+                opacity: 1;
                 flex-direction: column;
                 align-items: stretch;
                 height: auto;
