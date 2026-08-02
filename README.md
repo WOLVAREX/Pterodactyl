@@ -1,72 +1,59 @@
-[![Logo Image](https://cdn.pterodactyl.io/logos/new/pterodactyl_logo.png)](https://pterodactyl.io)
+# Pterodactyl Panel — Customized Fork
 
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/pterodactyl/panel/ci.yaml?label=Tests&style=for-the-badge&branch=1.0-develop)
-![Discord](https://img.shields.io/discord/122900397965705216?label=Discord&logo=Discord&logoColor=white&style=for-the-badge)
-![GitHub Releases](https://img.shields.io/github/downloads/pterodactyl/panel/latest/total?style=for-the-badge)
-![GitHub contributors](https://img.shields.io/github/contributors/pterodactyl/panel?style=for-the-badge)
+This is a customized fork of [Pterodactyl Panel](https://pterodactyl.io), the open-source game server management panel built with PHP (Laravel), React, and Go. The core panel — Docker-isolated game servers, a modern UI, node/location management, and the full admin toolset — is unchanged from upstream Pterodactyl.
 
-# Pterodactyl Panel
+On top of that core, this fork adds a **self-service billing and monetization layer**, letting users fund a wallet and instantly provision their own game servers without any manual admin intervention — turning the panel into a standalone SaaS hosting platform.
 
-Pterodactyl® is a free, open-source game server management panel built with PHP, React, and Go. Designed with security
-in mind, Pterodactyl runs all game servers in isolated Docker containers while exposing a beautiful and intuitive
-UI to end users.
+## What's different from upstream Pterodactyl
 
-Stop settling for less. Make game servers a first class citizen on your platform.
+### Billing & Monetization
 
-![Image](https://cdn.pterodactyl.io/site-assets/pterodactyl_v1_demo.gif)
+- **Wallet system** — every user has a wallet balance (`wallet_balance`) that can be topped up and spent on hosting plans.
+- **Transactions ledger** — every deposit and charge is recorded (`pending` / `success` / `failed`) with a unique reference, so payment history is fully auditable per user.
+- **Paystack payment gateway integration**:
+  - Card payments via Paystack's standard charge flow.
+  - **M-Pesa STK Push** via Paystack's mobile money charge endpoint — the primary payment method for the Kenyan market this fork targets.
+  - Webhook endpoint with **HMAC-SHA512 signature verification** to confirm payments server-to-server.
+  - Idempotent verify-and-credit flow wrapped in a database transaction, so a payment can never be credited twice.
+- **Multi-currency support** — admins can define currencies with exchange rates relative to a base currency (KES by default), each toggleable active/inactive.
+- **Resource pricing** — configurable per-unit pricing for CPU, memory, disk, etc., independent of fixed plans.
+- **Hosting plans** — admin-defined packages (name, price, billing period, memory/disk/CPU/database/backup/allocation limits) tied to a specific egg and nest, with featured/active flags and custom sort order.
+
+### Self-Service Server Provisioning
+
+- Users browse active plans from their account dashboard and purchase directly from their wallet balance.
+- On purchase, a server is **automatically provisioned** — no admin step required. If provisioning fails for any reason, the wallet is never charged.
+- Successful purchases are logged as `charge` transactions tied to the resulting server.
+
+### Account Registration
+
+- Public self-registration is enabled (`/auth/register`), gated behind reCAPTCHA, so new users can create their own accounts rather than requiring an admin to create them.
+
+### Configurable Panel Theme
+
+- Admins can re-theme the entire panel from **Admin → Settings → Theme**, without touching code or rebuilding assets.
+- Six built-in presets (Default, Black & White, Green & Black, Crimson Night, Purple Haze, Sunset Orange) or fully custom colors via a color picker with a live preview.
+- Under the hood, a single neutral color and a single accent color are expanded into a full 50–900 shade ramp using a fixed lightness curve, then injected as CSS custom properties at runtime — so the change applies instantly across the whole panel (sidebar, buttons, links, badges) for every logged-in user.
+
+### Refreshed Auth Pages
+
+- Login, Register, Forgot Password, Reset Password, and Login Checkpoint all share a redesigned, more compact layout — a small centered logo above the form instead of a large logo dominating half the card, and a sensible max-width instead of stretching across large screens.
+
+## Tech Stack
+
+- **Backend**: PHP 8.2+/8.3, Laravel
+- **Frontend**: React, TypeScript, Tailwind CSS
+- **Payments**: Paystack (card + M-Pesa mobile money)
+- **Deployment**: Docker-isolated game servers via Wings, Nginx, Certbot, PM2 (or equivalent process manager) for the queue worker
 
 ## Documentation
 
-* [Panel Documentation](https://pterodactyl.io/panel/1.0/getting_started.html)
-* [Wings Documentation](https://pterodactyl.io/wings/1.0/installing.html)
-* [Community Guides](https://pterodactyl.io/community/about.html)
-* Or, get additional help [via Discord](https://discord.gg/pterodactyl)
+Since the core panel is unmodified Pterodactyl, the official documentation still applies for anything not covered above:
 
-## Sponsors
-
-I would like to extend my sincere thanks to the following sponsors for helping fund Pterodactyl's development.
-[Interested in becoming a sponsor?](https://github.com/sponsors/pterodactyl)
-
-| Company                                                                           | About                                                                                                                                                                                                                                           |
-|-----------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [**Aussie Server Hosts**](https://aussieserverhosts.com/)                         | No frills Australian Owned and operated High Performance Server hosting for some of the most demanding games serving Australia and New Zealand.                                                                                                 |
-| [**BisectHosting**](https://www.bisecthosting.com/)                               | BisectHosting provides Minecraft, Valheim and other server hosting services with the highest reliability and lightning fast support since 2012.                                                                                                 |
-| [**MineStrator**](https://minestrator.com/)                                       | Looking for the most highend French hosting company for your minecraft server? More than 24,000 members on our discord trust us. Give us a try!                                                                                                 |
-| [**HostEZ**](https://hostez.io)                                                   | US & EU Rust & Minecraft Hosting. DDoS Protected bare metal, VPS and colocation with low latency, high uptime and maximum availability. EZ!                                                                                                     |
-| [**Blueprint**](https://blueprint.zip/?utm_source=pterodactyl&utm_medium=sponsor) | Create and install Pterodactyl addons and themes with the growing Blueprint framework - the package-manager for Pterodactyl. Use multiple modifications at once without worrying about conflicts and make use of the large extension ecosystem. |
-| [**indifferent broccoli**](https://indifferentbroccoli.com/)                      | indifferent broccoli is a game server hosting and rental company. With us, you get top-notch computer power for your gaming sessions. We destroy lag, latency, and complexity--letting you focus on the fun stuff.                              |
-
-### Supported Games
-
-Pterodactyl supports a wide variety of games by utilizing Docker containers to isolate each instance. This gives
-you the power to run game servers without bloating machines with a host of additional dependencies.
-
-Some of our core supported games include:
-
-* Minecraft — including Paper, Sponge, Bungeecord, Waterfall, and more
-* Rust
-* Terraria
-* Teamspeak
-* Mumble
-* Team Fortress 2
-* Counter Strike: Global Offensive
-* Garry's Mod
-* ARK: Survival Evolved
-
-In addition to our standard nest of supported games, our community is constantly pushing the limits of this software
-and there are plenty more games available provided by the community. Some of these games include:
-
-* Factorio
-* San Andreas: MP
-* Pocketmine MP
-* Squad
-* Xonotic
-* Starmade
-* Discord ATLBot, and most other Node.js/Python discord bots
-* [and many more...](https://pterodactyleggs.com)
+- [Panel Documentation](https://pterodactyl.io/panel/1.0/getting_started.html)
+- [Wings Documentation](https://pterodactyl.io/wings/1.0/installing.html)
+- [Community Guides](https://pterodactyl.io/community/about.html)
 
 ## License
 
-Pterodactyl® Copyright © 2015 - 2022 Dane Everitt and contributors.
-
-Code released under the [MIT License](./LICENSE.md).
+This project remains licensed under the [MIT License](./LICENSE.md), consistent with upstream Pterodactyl. Credit to [Dane Everitt](https://github.com/DaneEveritt), [Matthew Penner](https://github.com/matthewpi), and the Pterodactyl contributors for the original panel this fork is built on.
