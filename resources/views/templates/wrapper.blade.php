@@ -32,6 +32,16 @@
             @endif
         @show
 
+        @isset($themeVariables)
+            <style id="panel-theme-variables">
+                :root {
+                    @foreach($themeVariables as $name => $value)
+                        {{ $name }}: {{ $value }};
+                    @endforeach
+                }
+            </style>
+        @endisset
+
         @yield('assets')
 
         @include('layouts.scripts')
