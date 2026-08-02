@@ -109,7 +109,7 @@ export default () => {
             ) : plans.length === 0 ? (
                 <p css={tw`text-sm text-neutral-400`}>No plans are available for purchase right now.</p>
             ) : (
-                <div css={tw`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4`}>
+                <div css={tw`grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4`}>
                     {plans.map((plan) => (
                         <div
                             key={plan.id}
