@@ -70,6 +70,18 @@ Route::group(['prefix' => 'currencies'], function () {
 
 /*
 |--------------------------------------------------------------------------
+| Transaction Controller Routes
+|--------------------------------------------------------------------------
+|
+| Endpoint: /admin/transactions
+|
+*/
+Route::group(['prefix' => 'transactions'], function () {
+    Route::get('/', [Admin\TransactionController::class, 'index'])->name('admin.transactions');
+});
+
+/*
+|--------------------------------------------------------------------------
 | Resource Price Controller Routes
 |--------------------------------------------------------------------------
 |

@@ -111,6 +111,11 @@
                                 <i class="fa fa-money"></i> <span>Currencies</span>
                             </a>
                         </li>
+                        <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.transactions') ?: 'active' }}">
+                            <a href="{{ route('admin.transactions') }}">
+                                <i class="fa fa-exchange"></i> <span>Transactions</span>
+                            </a>
+                        </li>
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.nodes') ?: 'active' }}">
                             <a href="{{ route('admin.nodes') }}">
                                 <i class="fa fa-sitemap"></i> <span>Nodes</span>
